@@ -1,415 +1,537 @@
-import React, { useState, useRef } from 'react';
-import emailjs from '@emailjs/browser';
+import React, { useState, useRef, useEffect } from "react";
+import emailjs from "@emailjs/browser";
 import { BsMoon, BsSun } from "react-icons/bs";
-// import components
-import DownloadButton from '../common/components/DownloadButton/DownloadButton';
-import IconButton from '../common/components/IconButton/IconButton';
-import InputField from '../common/components/InputField/InputField';
-import TextAreaField from '../common/components/TextAreaField/TextAreaField';
-import SubmitButton from '../common/components/SubmitButton/SubmitButton';
-import Loader from '../common/components/Loader/Loader';
-import cv from '../assets/files/Ritesh Kumar Singh-PCE21IT044.pdf';
+import clsx from "clsx";
+import cv from "../assets/files/Ritesh Kumar Singh-PCE21IT044.pdf";
 
-// import icons
-import { FaReact } from "react-icons/fa";
-import { AiFillGithub, AiFillLinkedin, AiFillHtml5, AiOutlineEye } from "react-icons/ai";
-import { BiLogoGmail, BiLogoCss3, BiLogoJavascript, BiLogoRedux, BiLogoJava } from "react-icons/bi";
+// Corrected import path
+import ParticleBackground from "../common/components/ParticleBackground/ParticleBackground";
+
+// Import Style
+import style from "./App.module.css";
+
+// Import Icons
+import { FaReact, FaMobileAlt } from "react-icons/fa";
+import {
+  AiFillGithub,
+  AiFillLinkedin,
+  AiFillHtml5,
+  AiOutlineEye,
+} from "react-icons/ai";
+import {
+  BiLogoGmail,
+  BiLogoCss3,
+  BiLogoJavascript,
+  BiLogoRedux,
+  BiLogoJava,
+} from "react-icons/bi";
 import { BsFacebook, BsGit, BsPuzzle } from "react-icons/bs";
 import { TbBrandCpp } from "react-icons/tb";
-import { FaMobileAlt } from "react-icons/fa";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { SiTypescript, SiRecoil, SiReactquery } from "react-icons/si";
 
-//import images
-import Ataa from '../assets/images/Ataa.png';
-import Elzero from '../assets/images/Elzero.png';
-import Kasper from '../assets/images/Kasper.png';
-import Leon from '../assets/images/Leon.png';
-import SokoNumber from '../assets/images/SokoNumber.png';
-import GlobalShare from '../assets/images/GlobalShare.png';
+// Import Images
+import Ataa from "../assets/images/Ataa.png";
+import GlobalShare from "../assets/images/GlobalShare.png";
+import SokoNumber from "../assets/images/SokoNumber.png";
 
-// import style
-import style from './App.module.css';
-import clsx from 'clsx';
+// --- Helper Components & Hooks ---
+const Loader = () => (
+  <svg
+    width="38"
+    height="38"
+    viewBox="0 0 38 38"
+    xmlns="http://www.w3.org/2000/svg"
+    stroke="var(--color-primary-start)"
+  >
+    <g fill="none" fillRule="evenodd">
+      <g transform="translate(1 1)" strokeWidth="2">
+        <circle strokeOpacity=".5" cx="18" cy="18" r="18" />
+        <path d="M36 18c0-9.94-8.06-18-18-18">
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 18 18"
+            to="360 18 18"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </path>
+      </g>
+    </g>
+  </svg>
+);
+const useIntersectionObserver = (options) => {
+  const [ref, setRef] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        observer.unobserve(entry.target);
+      }
+    }, options);
+    if (ref) {
+      observer.observe(ref);
+    }
+    return () => {
+      if (ref) {
+        observer.unobserve(ref);
+      }
+    };
+  }, [ref, options]);
+  return [setRef, isVisible];
+};
+const AnimateOnScroll = ({ children }) => {
+  const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
+  return (
+    <div
+      ref={ref}
+      className={clsx(style.animated, { [style.visible]: isVisible })}
+    >
+      {" "}
+      {children}{" "}
+    </div>
+  );
+};
 
+// --- Data Arrays ---
 const skills = [
-	{
-		name: 'HTML 5',
-		icon: <AiFillHtml5 size="25px" color="white" />,
-		cssName: "html"
-	},
-	{
-		name: 'CSS 3',
-		icon: <BiLogoCss3 size="25px" color="white" />,
-		cssName: "css"
-	},
-	{
-		name: 'Java Script',
-		icon: <BiLogoJavascript size="25px" color="white" />,
-		cssName: "java-script"
-	},
-	{
-		name: "TypeScript",
-		icon: <SiTypescript size="25px" color="white" />,
-		cssName: "type-script"
-	},
-	{
-		name: 'React',
-		icon: <FaReact size="25px" color="white" />,
-		cssName: "react"
-	},
-	{
-		name: 'Redux ToolKit',
-		icon: <BiLogoRedux size="25px" color="white" />,
-		cssName: "redux"
-	},
-	{
-		name: 'Redux Recoil',
-		icon: <SiRecoil size="25px" color="white" />,
-		cssName: "recoil"
-	},
-	{
-		name: 'React Query',
-		icon: <SiReactquery size="25px" color="white" />,
-		cssName: "react-query"
-	},
-	{
-		name: 'RTK Query',
-		icon: <BiLogoRedux size="25px" color="white" />,
-		cssName: "redux"
-	},
-	{
-		name: 'Responsive Design',
-		icon: <FaMobileAlt size="25px" color="white" />,
-		cssName: "responsive"
-	},
-	{
-		name: 'Git',
-		icon: <BsGit size="25px" color="white" />,
-		cssName: "git"
-	},
-	{
-		name: 'java',
-		icon: <BiLogoJava size="25px" color="white" />,
-		cssName: "java"
-	},
-	{
-		name: 'C++',
-		icon: <TbBrandCpp size="25px" color="white" />,
-		cssName: "cpp"
-	},
-	{
-		name: 'Problem Solving',
-		icon: <BsPuzzle size="25px" color="white" />,
-		cssName: "problem-solving"
-	}
+  { name: "HTML 5", icon: <AiFillHtml5 size="22px" /> },
+  { name: "CSS 3", icon: <BiLogoCss3 size="22px" /> },
+  { name: "JavaScript", icon: <BiLogoJavascript size="22px" /> },
+  { name: "TypeScript", icon: <SiTypescript size="22px" /> },
+  { name: "React", icon: <FaReact size="22px" /> },
+  { name: "Redux Toolkit", icon: <BiLogoRedux size="22px" /> },
+  { name: "Recoil", icon: <SiRecoil size="22px" /> },
+  { name: "React Query", icon: <SiReactquery size="22px" /> },
+  { name: "Responsive Design", icon: <FaMobileAlt size="22px" /> },
+  { name: "Git", icon: <BsGit size="22px" /> },
+  { name: "Java", icon: <BiLogoJava size="22px" /> },
+  { name: "C++", icon: <TbBrandCpp size="22px" /> },
+  { name: "Problem Solving", icon: <BsPuzzle size="22px" /> },
+];
+const projects = [
+  {
+    name: "Global Share",
+    link: "https://github.com/Ritesh8107",
+    github: "https://github.com/Ritesh8107",
+    description:
+      "The Global Share ERP System is an innovative web-based application designed to streamline volunteer recruitment, management, and reward systems, enhancing employee engagement and promoting organizational excellence.",
+    image: GlobalShare,
+  },
+  {
+    name: `Ata'a`,
+    link: "https://github.com/Ritesh8107",
+    github: "https://github.com/Ritesh8107",
+    description:
+      "Ataa is a web application built with React for managing the operations of a charity organization. It includes a landing page and a dashboard for staff to manage projects, employees, and budgets.",
+    image: Ataa,
+  },
+  {
+    name: "Soko Number",
+    link: "https://github.com/Ritesh8107",
+    github: "https://github.com/Ritesh8107",
+    description:
+      "Soko Number is a puzzle game built with the React framework. The game consists of 6 challenging levels that will test your problem-solving skills, requiring you to move numbered tiles to designated positions.",
+    image: SokoNumber,
+  },
 ];
 
-const projects = [
-	{
-		name: 'Global Share',
-		link: '',
-		github: '',
-		description: 'The Global Share ERP System is an innovative web-based application designed to streamline volunteer recruitment, management, and reward systems. It incorporates task management, recruitment, and gamification features to enhance employee engagement, promote effective communication, and drive organizational excellence.',
-		image: GlobalShare
-	},
-	{
-		name: `Ata'a`,
-		link: '',
-		github: '',
-		description: "Ataa is a web application built with React for managing and organizing the operations of a charity organization. The application includes a landing page that provides an overview of the charity's mission and goals. Staff members of the charity can log in to the main dashboard, which allows them to manage and control the projects, employees, and beneficiaries associated with the charity. Additionally, there is a section dedicated to viewing the total budget of the charity, as well as the budget allocated to each individual project.",
-		image: Ataa
-	},
-	{
-		name: 'SoKo Number',
-		link: '',
-		github: '',
-		description: 'Soko Number is a puzzle game built with the React framework. The game consists of 6 challenging levels that will test your problem-solving skills. Each level presents a grid-based puzzle where you need to move numbered tiles to their designated positions.',
-		image: SokoNumber
-	},
-	{
-		name: 'Leon',
-		link: '',
-		github: '',
-		description: 'Leon is a modern and responsive HTML and CSS design template that provides a sleek and visually appealing foundation for building stunning websites. With its clean and elegant design, Leon focuses on simplicity and exceptional user experience.',
-		image: Leon
-	},
-	{
-		name: 'Nike Website',
-		link: '',
-		github: '',
-		description: 'Nike Website is a modern and responsive HTML and CSS design template that provides a sleek and visually appealing foundation for building stunning websites. With its clean and elegant design, Kaspar focuses on simplicity and exceptional user experience.',
-		image: Kasper
-	},
-	{
-		name: 'Elzero',
-		link: '',
-		github: '',
-		description: 'Elzero is a stylish and interactive HTML, CSS, and JavaScript design template that offers a modern and engaging user experience. With its clean code structure and well-designed components, Elzero provides a solid foundation for building dynamic and visually appealing web applications.',
-		image: Elzero
-	},
-]
-
 function App() {
-	const form = useRef();
+  const form = useRef();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState("dark"); // Set dark theme as the initial fallback
 
-	const [menu, setMenu] = useState(false);
-	const [loading, setLoading] = useState(false);
+  // OPTIMIZATION: This useEffect detects the user's system preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-	const sendEmail = (e) => {
-		e.preventDefault();
-		setLoading(true);
+    // Set initial theme based on system preference
+    setTheme(mediaQuery.matches ? "dark" : "light");
 
-		setTimeout(function () {
-			emailjs.sendForm('service_gjbmeus', 'template_qk6p0pa', form.current, 'HDMwz57k3xrihLg4J')
-				.then((result) => {
-					e.target.name.value = '';
-					e.target.email.value = '';
-					e.target.message.value = '';
-				});
-			setLoading(false);
-		}, 2000);
+    // Listen for changes in system preference
+    const handler = (e) => setTheme(e.matches ? "dark" : "light");
+    mediaQuery.addEventListener("change", handler);
 
-	};
+    // Cleanup listener on component unmount
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
 
-	return (
-		<div className={style.app}>
-			{/* Navbar */}
-			<div className={style.nav}>
-				<a className={style.logo}>
-					<FaReact color='var(--primary-main)' size='50px' />
-					<h5>Ritesh Singh</h5>
-				</a>
-				<ul>
-					<li><a href="#Home">Home</a></li>
-					<li><a href="#About">About</a></li>
-					<li><a href="#Projects">Projects</a></li>
-					<li><a href="#Contact">Contact</a></li>
-				</ul>
-				<div className={style["menu-icon"]}>
-					<input id='checkbox' className={style["checkbox2"]} type="checkbox" />
-					<label className={`${style.toggle} ${style.toggle2}`} for="checkbox" onClick={() => setMenu(!menu)}>
-						<div className={`${style.bars} ${style.bar4}`}></div>
-						<div className={`${style.bars} ${style.bar5}`}></div>
-						<div className={`${style.bars} ${style.bar6}`}></div>
-					</label>
-				</div>
-			</div>
-			{
-				menu === true &&
-				<ul className={style.menu}>
-					<li><a href="#Home">Home</a></li>
-					<li><a href="#About">About</a></li>
-					<li><a href="#Projects">Projects</a></li>
-					<li><a href="#Contact">Contact</a></li>
-				</ul>
-			}
+  // This useEffect applies the theme class to the body
+  useEffect(() => {
+    document.body.className = ""; // Clear previous classes
+    document.body.classList.add(theme);
+  }, [theme]);
 
-			{/* Home */}
-			<div id='Home' className={style.home}>
-				<div className={style["home-content"]}>
-					<h1>HEY, I'M Ritesh Singh`</h1>
-					<p>A Frontend focused Web Developer building the Frontend of Websites and Web Applications that leads to the success of the overall product</p>
-					<a
-						href={cv}
-						download="cv-PDF-document"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<DownloadButton >
-							Download CV
-						</DownloadButton>
-					</a>
-				</div>
-				<div className={style["scroll-icon"]}>
-					<div className={style["scroll-down"]} style={{ color: "skyblue !important" }}>
-						<div className={style.chevrons}>
-							<div className={style["chevron-down"]}></div>
-							<div className={style["chevron-down"]}></div>
-						</div>
-					</div>
-				</div>
-				<div className={style["contact-nav"]}>
-					<a className={style.github} target="_blank" href='https://github.com/Ritesh8107' >
-						<AiFillGithub size="30px" color='black' />
-					</a>
-					<a className={style.linkedin} target="_blank" href='https://www.linkedin.com/in/ritesh-singh-8417a7229/' >
-						<AiFillLinkedin size="30px" color='black' />
-					</a>
-					<a className={style.gmail} target="_blank" href="mailto:2021pceitritesh044@poornima.org?subject=SendMail&body=Description" >
-						<BiLogoGmail size="30px" color='black' />
-					</a>
-					<a className={style.facebook} target="_blank" href='https://www.linkedin.com/in/ritesh-singh-8417a7229/' >
-						<BsFacebook size="30px" color='black' />
-					</a>
-				</div>
-			</div>
+  // UseEffect for Water Ripple Click Effect
+  useEffect(() => {
+    const createRipple = (event) => {
+      const ripple = document.createElement("span");
+      ripple.className = style.ripple;
+      document.body.appendChild(ripple);
+      ripple.style.left = `${event.clientX}px`;
+      ripple.style.top = `${event.clientY}px`;
+      setTimeout(() => {
+        ripple.remove();
+      }, 1000);
+    };
+    document.addEventListener("click", createRipple);
+    return () => {
+      document.removeEventListener("click", createRipple);
+    };
+  }, []);
 
-			{/* About */}
-			<div id='About' className={style.about}>
-				<div className={style.container}>
-					<h2 className={style.title}>About Me</h2>
-					<p>Here you will find more information about me, what I do, and my current skills mostly in terms of programming and technology</p>
-					<div className={style["about-content"]}>
-						<div className={style["about-info"]}>
-							<h3>Get to know me!</h3>
-							<p>
-								I'm a <span>Frontend Web Developer</span> building the Front-end of Websites and Web Applications that leads to the success of the overall product. Check out some of my work in the <span>Projects</span> section. <br /> <br />
-								I also like sharing content related to the stuff that I have learned over the years in <span>Web Development</span> so it can help other people of the Dev Community. Feel free to Connect or Follow me on my <a href="https://github.com/Ritesh8107" target="_blank">Github</a> where I post useful content related to Web Development and Programming. <br /> <br />
-								I'm open to <span>Job</span> opportunities where I can contribute, learn and grow. If you have a good opportunity that matches my skills and experience then don't hesitate to <span>contact</span> me.
-							</p>
-						</div>
-						<div className={style["my-skill"]}>
-							<h3>My Skills</h3>
-							<div className={style.skills}>
-								{
-									skills.map((skill, index) => {
-										return <div key={`skill${index}`} className={`${style.skill} ${style[skill.cssName]}`}>
-											<div className={style["skill-name"]}>{skill.name}</div>
-											<div className={style["skill-icon"]}>{skill.icon}</div>
-										</div>
-									})
-								}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+  // Manual toggle will override the system preference for the session
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
 
-			{/* Projects */}
-			<div id='Projects' className={style.projects}>
-				<div className={style.container}>
-					<h2 className={style.title}>Projects</h2>
-					<p>Here you will find some of the personal and clients projects that I created with each project containing its own case study</p>
-					<div className={style["projects-list"]}>
-						{
-							projects.map((project, index) => {
-								return <div key={`project${index}`} className={style.project}>
-									<div className={style["project-image"]}>
-										<img src={project.image} alt="Project Image" />
-									</div>
-									<div className={style["project-info"]}>
-										<h3>{project.name}</h3>
-										<p>{project.description}</p>
-										<div className={style["project-buttons"]}>
-											<IconButton
-												width="170px"
-												height="50px"
-												backgroundColor="var(--primary-main)"
-												color="white"
-												link={project.link}
-												icon={<AiOutlineEye size="25px" color='white' />}
-											>
-												Live Demo
-											</IconButton>
-											<IconButton
-												width="100px"
-												height="50px"
-												backgroundColor="black"
-												color="white"
-												link={project.github}
-												icon={<AiFillGithub size="25px" color='white' />}
-											>
-												Github
-											</IconButton>
-										</div>
-									</div>
-								</div>
-							})
-						}
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    emailjs
+      .sendForm(
+        "service_gjbmeus",
+        "template_qk6p0pa",
+        form.current,
+        "HDMwz57k3xrihLg4J"
+      )
+      .then(
+        (result) => {
+          e.target.reset();
+          alert("Message sent successfully!");
+        },
+        (error) => {
+          alert("Failed to send message, please try again.");
+        }
+      )
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
-					</div>
-				</div>
-			</div>
+  return (
+    <div className={clsx(style.app, style[theme])}>
+      <ParticleBackground theme={theme} />
+      <header className={style.header}>
+        <a href="#hero" className={style.logo}>
+          <FaReact color="var(--color-primary-start)" size="40px" />
+          <h5>Ritesh Singh</h5>
+        </a>
+        <nav className={clsx(style.navLinks, { [style.open]: menuOpen })}>
+          <a href="#hero" onClick={() => setMenuOpen(false)}>
+            Home
+          </a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>
+            About
+          </a>
+          <a href="#projects" onClick={() => setMenuOpen(false)}>
+            Projects
+          </a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>
+            Contact
+          </a>
+        </nav>
+        <div className={style.headerActions}>
+          <button
+            className={style.themeToggle}
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <BsMoon size={20} /> : <BsSun size={20} />}
+          </button>
+          <button
+            className={clsx(style.menuToggle, { [style.active]: menuOpen })}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span className={style.menuIcon}></span>
+          </button>
+        </div>
+      </header>
 
-			{/* Contact */}
-			<div id='Contact' className={style.contact}>
-				<div className={style.container}>
-					<h2 className={style.title}>Contact</h2>
-					<p>Feel free to Contact me by submitting the form below and I will get back to you as soon as possible</p>
-					<form
-						ref={form} onSubmit={sendEmail}
-						className={
-							clsx(
-								{ [style['inactive-form']]: loading }
-							)}
-					>
-						<InputField
-							width="700px"
-							height="40px"
-							name="name"
-							placeholder="Enter Your Name"
-							label="Name"
-							type="text"
-						/>
-						<InputField
-							width="700px"
-							height="40px"
-							name="email"
-							placeholder="Enter Your Email"
-							label="Email"
-							type="email"
-						/>
-						<TextAreaField
-							width="700px"
-							height="250px"
-							name="message"
-							placeholder="Enter Your Message"
-							label="Message"
-							type="text"
-						/>
-						<SubmitButton
-							icon={<RiSendPlaneFill size="20px" color='white' />}
-							width="200px"
-							height="60px"
-							color="white"
-							backgroundColor="var(--primary-main)"
-						>
-							Submit
-						</SubmitButton>
-						{
-							loading &&
-							<div className={style.loader}>
-								<Loader />
-							</div>
-						}
-					</form>
-				</div>
-			</div>
+      <main>
+        <nav className={style.socialNav}>
+          <a
+            href="https://github.com/Ritesh8107"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Github"
+          >
+            <AiFillGithub size="24px" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/ritesh-singh-8417a7229/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+          >
+            <AiFillLinkedin size="24px" />
+          </a>
+          <a href="mailto:2021pceitritesh044@poornima.org" aria-label="Email">
+            <BiLogoGmail size="24px" />
+          </a>
+        </nav>
 
-			{/* footer */}
-			<div className={style.footer}>
-				<div className={style.container}>
-					<div className={style["footer-info"]}>
-						<div>
-							<h3>Ritesh Singh</h3>
-							<p>A Frontend focused Web Developer building the Frontend of Websites and Web Applications that leads to the success of the overall product</p>
-						</div>
-						<div className={style.social}>
-							<h3>Social</h3>
-							<div className="">
-								<a className={style.git} target="_blank" href='https://github.com/IbrahimHiarea' >
-									<AiFillGithub size="30px" color='white' />
-								</a>
-								<a className={style.linkedin} target="_blank" href='https://www.linkedin.com/in/ibrahim-hiarea/' >
-									<AiFillLinkedin size="30px" color='white' />
-								</a>
-								<a className={style.gmail} target="_blank" href="mailto:ibrahimhiarea2@gmail.com?subject=SendMail&body=Description" >
-									<BiLogoGmail size="30px" color='white' />
-								</a>
-								<a className={style.facebook} target="_blank" href='https://www.facebook.com/ibrahim.hiarea' >
-									<BsFacebook size="30px" color='white' />
-								</a>
-							</div>
-						</div>
-					</div>
-					<div className={style["copy-right"]}>
-						© Copyright 2025. Made by <span>Ritesh Singh</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+        <section id="hero" className={style.hero}>
+          <div className={style.heroContent}>
+            <div className={style.heroHeading}>
+              <h1>Hey, I'm Ritesh Singh</h1>
+            </div>
+            <div className={style.heroSubheading}>
+              <p>
+                A Frontend-focused Web Developer building the user interface of
+                Websites and Web Applications that leads to the success of the
+                overall product.
+              </p>
+            </div>
+            <div className={style.heroButtonWrapper}>
+              <a
+                href={cv}
+                download="Ritesh-Singh-CV.pdf"
+                className={style.heroButton}
+              >
+                Download CV
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className={`${style.section} ${style.about}`}>
+          <div className={style.container}>
+            <AnimateOnScroll>
+              <h2 className={style.sectionTitle}>About Me</h2>
+              <p className={style.sectionSubtitle}>
+                Here you will find more information about me, what I do, and my
+                current skills in terms of programming and technology.
+              </p>
+            </AnimateOnScroll>
+            <div className={style.aboutContent}>
+              <AnimateOnScroll>
+                <div className={style.aboutInfo}>
+                  <h3>Get to know me!</h3>
+                  <p>
+                    I'm a <span>Frontend Web Developer</span> building the
+                    Front-end of Websites and Web Applications. Check out some
+                    of my work in the <span>Projects</span> section.
+                  </p>
+                  <p>
+                    I also like sharing content related to what I've learned in{" "}
+                    <span>Web Development</span> to help other people in the Dev
+                    Community. Feel free to connect with me on my{" "}
+                    <a
+                      href="https://www.linkedin.com/in/ritesh-singh-8417a7229/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      LinkedIn
+                    </a>
+                    .
+                  </p>
+                  <p>
+                    I'm open to <span>Job</span> opportunities where I can
+                    contribute, learn and grow. If you have a good opportunity
+                    that matches my skills, please don't hesitate to{" "}
+                    <span>contact</span> me.
+                  </p>
+                </div>
+              </AnimateOnScroll>
+              <AnimateOnScroll>
+                <div className={style.mySkills}>
+                  <h3>My Skills</h3>
+                  <div className={style.skillsGrid}>
+                    {skills.map((skill) => (
+                      <div key={skill.name} className={style.skill}>
+                        <span className={style.skillIcon}>{skill.icon}</span>
+                        {skill.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </AnimateOnScroll>
+            </div>
+          </div>
+        </section>
+        <section id="projects" className={`${style.section} ${style.projects}`}>
+          <div className={style.container}>
+            <AnimateOnScroll>
+              <h2 className={style.sectionTitle}>Projects</h2>
+              <p className={style.sectionSubtitle}>
+                Here you will find some of the personal projects that I have
+                created.
+              </p>
+            </AnimateOnScroll>
+            <div className={style.projectsList}>
+              {projects.map((project, index) => (
+                <AnimateOnScroll key={index}>
+                  <div className={style.project}>
+                    <div className={style.projectImage}>
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={project.image}
+                          alt={`${project.name} project screenshot`}
+                        />
+                      </a>
+                    </div>
+                    <div className={style.projectInfo}>
+                      <h3>{project.name}</h3>
+                      <p>{project.description}</p>
+                      <div className={style.projectButtons}>
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`${style.projectButton} ${style.liveButton}`}
+                        >
+                          <AiOutlineEye size="20px" /> Live Demo
+                        </a>
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`${style.projectButton} ${style.githubButton}`}
+                        >
+                          <AiFillGithub size="20px" /> GitHub
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </AnimateOnScroll>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section id="contact" className={`${style.section} ${style.contact}`}>
+          <div className={style.container}>
+            <AnimateOnScroll>
+              <h2 className={style.sectionTitle}>Contact</h2>
+              <p className={style.sectionSubtitle}>
+                Feel free to contact me by submitting the form below and I will
+                get back to you as soon as possible.
+              </p>
+            </AnimateOnScroll>
+            <AnimateOnScroll>
+              <form
+                ref={form}
+                onSubmit={sendEmail}
+                className={style.contactForm}
+              >
+                {loading && (
+                  <div className={style.formLoader}>
+                    <Loader />
+                  </div>
+                )}
+                <div className={style.formGroup}>
+                  <label htmlFor="name" className={style.formLabel}>
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter Your Name"
+                    className={style.formInput}
+                    required
+                  />
+                </div>
+                <div className={style.formGroup}>
+                  <label htmlFor="email" className={style.formLabel}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter Your Email"
+                    className={style.formInput}
+                    required
+                  />
+                </div>
+                <div className={style.formGroup}>
+                  <label htmlFor="message" className={style.formLabel}>
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Enter Your Message"
+                    className={style.formTextarea}
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  className={style.submitButton}
+                  disabled={loading}
+                >
+                  <RiSendPlaneFill size="20px" /> Submit
+                </button>
+              </form>
+            </AnimateOnScroll>
+          </div>
+        </section>
+      </main>
+
+      <footer className={style.footer}>
+        <div className={`${style.container} ${style.footerContainer}`}>
+          <div className={style.footerInfo}>
+            <div className={style.footerAbout}>
+              <h3>Ritesh Singh</h3>
+              <p>
+                A Frontend-focused Web Developer building beautiful and
+                user-friendly interfaces for websites and web applications.
+              </p>
+            </div>
+            <div className={style.footerSocials}>
+              <h3>Social</h3>
+              <div className={style.socialLinks}>
+                <a
+                  href="https://github.com/Ritesh8107"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Github"
+                >
+                  <AiFillGithub size="24px" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/ritesh-singh-8417a7229/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <AiFillLinkedin size="24px" />
+                </a>
+                <a
+                  href="mailto:2021pceitritesh044@poornima.org"
+                  aria-label="Email"
+                >
+                  <BiLogoGmail size="24px" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/ritesh-singh-8417a7229/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <BsFacebook size="24px" />
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className={style.copyRight}>
+            © Copyright {new Date().getFullYear()}. Made by{" "}
+            <span>Ritesh Singh</span>.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
 export default App;
