@@ -35,28 +35,28 @@ export const links = [
 
 export const experiencesData = [
   {
-    title: "Graduated bootcamp",
-    location: "Miami, FL",
+    title: "Graduated High School and Enrolled in B.Tech",
+    location: "Poornima College of Engineering, Jaipur, India",
     description:
-      "I graduated after 6 months of studying. I immediately found a job as a front-end developer.",
+      "Started my Bachelor's in Information Technology, learning fundamentals in programming, data structures, and computer systems.",
     icon: React.createElement(LuGraduationCap),
-    date: "2019",
+    date: "2021 - Present (Expected Graduation: 2025)",
   },
   {
-    title: "Front-End Developer",
-    location: "Orlando, FL",
+    title: "Python Developer & Prompt Engineer Intern",
+    location: "Requin Solutions PVT LTD, Jaipur",
     description:
-      "I worked as a front-end developer for 2 years in 1 job and 1 year in another job. I also upskilled to the full stack.",
+      "Engineered prompts for LLMs to automate marketing reports, built Python POCs for customer behavior data, integrated candidate profile data, and contributed to SEO and Gen AI projects.",
     icon: React.createElement(CgWorkAlt),
-    date: "2019 - 2021",
+    date: "Jan 2024 - Jun 2024",
   },
   {
-    title: "Full-Stack Developer",
-    location: "Houston, TX",
+    title: "Front-End Developer Intern",
+    location: "Requin Solutions PVT LTD, Jaipur",
     description:
-      "I'm now a full-stack developer working as a freelancer. My stack includes React, Next.js, TypeScript, Tailwind, Prisma and MongoDB. I'm open to full-time opportunities.",
+      "Developed reusable React components improving load times by 35%, integrated REST APIs, and collaborated in an Agile team with UI/UX designers and backend developers.",
     icon: React.createElement(FaReact),
-    date: "2021 - present",
+    date: "Jun 2024 - Present",
   },
 ] as const;
 
@@ -102,6 +102,15 @@ export const skillsData = [
   "Express",
   "PostgreSQL",
   "Python",
-  "Django",
+  "Java",
+  "SQL",
+  "Power BI",
+  ".NET Core",
+  "REST APIs",
+  "Firebase",
+  "AWS",
+  "Microsoft Azure",
+  "Machine Learning",
+  "Prompt Engineering",
   "Framer Motion",
 ] as const;
